@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "624268864963",
+    "project_id": "f-reddit-e0bd1",
+    "storage_bucket": "f-reddit-e0bd1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624268864963:android:4d8c1b53d2c6811790a176",
+        "android_client_info": {
+          "package_name": "com.example.f_reddit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1EW3T1dJqjWKcsbWOJDcqxz_1ujtGMk0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
