@@ -61,5 +61,7 @@
 		</dict>
 	</array>
 	<!-- End of the Google Sign-in Section -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Need the user to upload a customized bannar photo</string>
 </dict>
 </plist>
