@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:f_reddit/core/constants/constants.dart';
+import 'package:f_reddit/core/providers/firebase_providers.dart';
+import 'package:f_reddit/core/providers/storage_repository_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routemaster/routemaster.dart';
@@ -16,7 +20,8 @@ final userCommunitiesProvider = StreamProvider((ref) {
 final communityControllerProvider =
     StateNotifierProvider<CommunityController, bool>((ref) {
   final communityReposity = ref.watch(communityRepositoryProvider);
-  return CommunityController(communityReposity, ref);
+  final storageReposity = ref.watch(storageRepositoryProvider);
+  return CommunityController(communityReposity, ref, storageReposity);
 });
 
 final getCommunityByNameProvider = StreamProvider.family((ref, String name) {
@@ -26,8 +31,11 @@ final getCommunityByNameProvider = StreamProvider.family((ref, String name) {
 class CommunityController extends StateNotifier<bool> {
   final CommunityReposity _communityReposity;
   final Ref _ref;
+  final StorageRepository _storageRepository;
 
-  CommunityController(this._communityReposity, this._ref) : super(false);
+  CommunityController(
+      this._communityReposity, this._ref, this._storageRepository)
+      : super(false);
 
   void createCommunity(String name, BuildContext context) async {
     state = true;
@@ -55,5 +63,29 @@ class CommunityController extends StateNotifier<bool> {
 
   Stream<Community> getCommunity(String name) {
     return _communityReposity.getCommunity(name);
+  }
+
+  void editCommunity(File? profileFile, File? bannerFile, BuildContext context,
+      Community community) async {
+    state = true;
+    if (profileFile != null) {
+      final res = await _storageRepository.storeFile(
+          'communities/profile', community.name, profileFile);
+      res.fold((l) => showSnackBar(context, l.message),
+          (r) => community = community.copyWith(avatar: r));
+    }
+    if (bannerFile != null) {
+      final res = await _storageRepository.storeFile(
+          'communities/banner', community.name, bannerFile);
+      res.fold((l) => showSnackBar(context, l.message),
+          (r) => community = community.copyWith(banner: r));
+    }
+
+    final res = await _communityReposity.editCommunity(community);
+    state = false;
+    res.fold((l) => showSnackBar(context, l.message), (r) {
+      showSnackBar(context, "Community edited successfully");
+      Routemaster.of(context).pop();
+    });
   }
 }

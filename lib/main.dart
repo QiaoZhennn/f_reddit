@@ -1,7 +1,6 @@
 import 'package:f_reddit/core/common/error_text.dart';
 import 'package:f_reddit/core/common/loader.dart';
 import 'package:f_reddit/features/auth/controller/auth_controller.dart';
-import 'package:f_reddit/features/auth/screens/login_screen.dart';
 import 'package:f_reddit/router.dart';
 import 'package:f_reddit/theme/palette.dart';
 import 'package:firebase_auth/firebase_auth.dart';
