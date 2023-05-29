@@ -1,8 +1,10 @@
 import 'package:f_reddit/features/auth/screens/login_screen.dart';
+import 'package:f_reddit/router.dart';
 import 'package:f_reddit/theme/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:routemaster/routemaster.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -18,11 +20,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'F_Reddit',
-      theme: Palette.darkModeAppTheme,
-      home: LoginScreen(),
-    );
+    return MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'F_Reddit',
+        theme: Palette.darkModeAppTheme,
+        routerDelegate: RoutemasterDelegate(
+          routesBuilder: (context) => loggedOutRoute,
+        ),
+        routeInformationParser: const RoutemasterParser());
   }
 }
