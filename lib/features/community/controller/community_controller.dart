@@ -5,8 +5,10 @@ import 'package:f_reddit/core/providers/firebase_providers.dart';
 import 'package:f_reddit/core/providers/storage_repository_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:routemaster/routemaster.dart';
 
+import '../../../core/failures.dart';
 import '../../../core/utils.dart';
 import '../../../model/community_model.dart';
 import '../../auth/controller/auth_controller.dart';
@@ -57,6 +59,24 @@ class CommunityController extends StateNotifier<bool> {
     res.fold((l) => showSnackBar(context, l.message), (r) {
       showSnackBar(context, "Community created");
       Routemaster.of(context).pop();
+    });
+  }
+
+  void joinCommunity(Community community, BuildContext context) async {
+    final uid = _ref.read(userProvider)!.uid;
+    Either<Failure, void> res;
+    if (community.members.contains(uid)) {
+      res = await _communityReposity.leaveCommunity(community.name, uid);
+      return;
+    } else {
+      res = await _communityReposity.joinCommunity(community.name, uid);
+    }
+    res.fold((l) => showSnackBar(context, l.message), (r) {
+      if (community.members.contains(uid)) {
+        showSnackBar(context, 'Left ${community.name}');
+      } else {
+        showSnackBar(context, 'Joined ${community.name}');
+      }
     });
   }
 
