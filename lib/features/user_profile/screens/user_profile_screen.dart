@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:routemaster/routemaster.dart';
 
 import '../../../core/common/error_text.dart';
 import '../../../core/common/loader.dart';
@@ -8,6 +9,10 @@ import '../../auth/controller/auth_controller.dart';
 class UserProfileScreen extends ConsumerWidget {
   final String uid;
   const UserProfileScreen(this.uid, {super.key});
+
+  void navigateToEditUser(BuildContext context) {
+    Routemaster.of(context).push('/edit-user/$uid');
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +43,7 @@ class UserProfileScreen extends ConsumerWidget {
                             alignment: Alignment.bottomLeft,
                             padding: const EdgeInsets.all(20),
                             child: OutlinedButton(
-                              onPressed: () {},
+                              onPressed: () => navigateToEditUser(context),
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0),

@@ -9,6 +9,7 @@ import 'features/auth/screens/login_screen.dart';
 import 'features/community/screens/community_screen.dart';
 import 'features/community/screens/edit_community_screen.dart';
 import 'features/home/screens/home_screen.dart';
+import 'features/user_profile/screens/edit_profile_screen.dart';
 
 final loggedOutRoute = RouteMap(routes: {
   '/': (_) => MaterialPage(child: LoginScreen()),
@@ -27,4 +28,6 @@ final loggedInRoute = RouteMap(routes: {
       MaterialPage(child: AddModsScreen(route.pathParameters['name']!)),
   '/u/:uid': (route) =>
       MaterialPage(child: UserProfileScreen(route.pathParameters['uid']!)),
+  '/edit-user/:uid': (route) =>
+      MaterialPage(child: EditProfileScreen(route.pathParameters['uid']!)),
 });
