@@ -16,6 +16,14 @@ class PostCard extends ConsumerWidget {
     ref.read(postControllerProvider.notifier).deletePost(context, post);
   }
 
+  void upvotePost(WidgetRef ref) {
+    ref.read(postControllerProvider.notifier).upvote(post);
+  }
+
+  void downvotePost(WidgetRef ref) {
+    ref.read(postControllerProvider.notifier).downvote(post);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isTypeImage = post.type == 'image';
@@ -117,7 +125,7 @@ class PostCard extends ConsumerWidget {
                               Row(
                                 children: [
                                   IconButton(
-                                      onPressed: () {},
+                                      onPressed: () => upvotePost(ref),
                                       icon: Icon(
                                         Icons.thumb_up,
                                         size: 30,
@@ -130,11 +138,11 @@ class PostCard extends ConsumerWidget {
                                     style: const TextStyle(fontSize: 17),
                                   ),
                                   IconButton(
-                                      onPressed: () {},
+                                      onPressed: () => downvotePost(ref),
                                       icon: Icon(
                                         Icons.thumb_down,
                                         size: 30,
-                                        color: post.upvotes.contains(user.uid)
+                                        color: post.downvotes.contains(user.uid)
                                             ? Palette.blueColor
                                             : Colors.grey,
                                       )),
@@ -146,13 +154,10 @@ class PostCard extends ConsumerWidget {
                                     children: [
                                       IconButton(
                                           onPressed: () {},
-                                          icon: Icon(
+                                          icon: const Icon(
                                             Icons.comment,
                                             size: 30,
-                                            color:
-                                                post.upvotes.contains(user.uid)
-                                                    ? Palette.redColor
-                                                    : Colors.grey,
+                                            color: Colors.grey,
                                           )),
                                       Text(
                                         '${post.commentCount == 0 ? 'Comment' : post.commentCount}',
