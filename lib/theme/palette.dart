@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final themeNotifierProvider = StateNotifierProvider<ThemeNotifier, ThemeData>(
+  (ref) => ThemeNotifier(),
+);
 
 class Palette {
   // Colors
@@ -43,4 +49,40 @@ class Palette {
     primaryColor: redColor,
     backgroundColor: whiteColor,
   );
+}
+
+class ThemeNotifier extends StateNotifier<ThemeData> {
+  ThemeMode mode;
+
+  ThemeMode get getMode => mode;
+
+  ThemeNotifier({this.mode = ThemeMode.dark})
+      : super(Palette.darkModeAppTheme) {
+    getTheme();
+  }
+
+  void getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final theme = prefs.getString('theme');
+    if (theme == 'light') {
+      mode = ThemeMode.light;
+      state = Palette.lightModeAppTheme;
+    } else {
+      mode = ThemeMode.dark;
+      state = Palette.darkModeAppTheme;
+    }
+  }
+
+  void toggleTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (mode == ThemeMode.dark) {
+      mode = ThemeMode.light;
+      state = Palette.lightModeAppTheme;
+      prefs.setString('theme', 'light');
+    } else {
+      mode = ThemeMode.dark;
+      state = Palette.darkModeAppTheme;
+      prefs.setString('theme', 'dark');
+    }
+  }
 }
