@@ -9,6 +9,7 @@ import 'package:routemaster/routemaster.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/utils.dart';
+import '../../../model/comment_model.dart';
 import '../../../model/post.dart';
 import '../../auth/controller/auth_controller.dart';
 
@@ -23,6 +24,16 @@ final userPostsProvider =
     StreamProvider.family((ref, List<Community> communities) {
   final postController = ref.watch(postControllerProvider.notifier);
   return postController.fetchUserPosts(communities);
+});
+
+final getPostByIdProvider = StreamProvider.family((ref, String postId) {
+  final postController = ref.watch(postControllerProvider.notifier);
+  return postController.getPostById(postId);
+});
+
+final fetchComentsOfPostProvider = StreamProvider.family((ref, String postId) {
+  final postController = ref.watch(postControllerProvider.notifier);
+  return postController.fetchCommentsOfPost(postId);
 });
 
 class PostController extends StateNotifier<bool> {
@@ -141,5 +152,28 @@ class PostController extends StateNotifier<bool> {
   void downvote(Post post) {
     final uid = _ref.read(userProvider)!.uid;
     _postRepository.downvote(post, uid);
+  }
+
+  Stream<Post> getPostById(String postId) {
+    return _postRepository.getPostById(postId);
+  }
+
+  void addComment(BuildContext context, String text, Post post) async {
+    final user = _ref.read(userProvider)!;
+    String commentId = const Uuid().v1();
+    Comment comment = Comment(
+      id: commentId,
+      text: text,
+      username: user.name,
+      createdAt: DateTime.now(),
+      postId: post.id,
+      userProfilePic: user.profile,
+    );
+    final res = await _postRepository.addComment(comment);
+    res.fold((l) => showSnackBar(context, l.message), (r) => null);
+  }
+
+  Stream<List<Comment>> fetchCommentsOfPost(String postId) {
+    return _postRepository.fetchCommentsOfPost(postId);
   }
 }
