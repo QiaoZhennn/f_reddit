@@ -7,6 +7,7 @@ import '../../../core/common/error_text.dart';
 import '../../../core/common/loader.dart';
 import '../../../core/common/post_card.dart';
 import '../../../model/post.dart';
+import '../../auth/controller/auth_controller.dart';
 import '../widgets/comment_card.dart';
 
 class CommentScreen extends ConsumerStatefulWidget {
@@ -37,6 +38,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider)!;
+    final isGuest = !user.isAuthenticated;
     return Scaffold(
       appBar: AppBar(),
       body: ref.watch(getPostByIdProvider(widget.postId)).when(
@@ -44,14 +47,15 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
             return Column(
               children: [
                 PostCard(data),
-                TextField(
-                  onSubmitted: (value) => addComment(data),
-                  controller: commentController,
-                  decoration: const InputDecoration(
-                      hintText: 'What are your thoughts',
-                      filled: true,
-                      border: InputBorder.none),
-                ),
+                if (!isGuest)
+                  TextField(
+                    onSubmitted: (value) => addComment(data),
+                    controller: commentController,
+                    decoration: const InputDecoration(
+                        hintText: 'What are your thoughts',
+                        filled: true,
+                        border: InputBorder.none),
+                  ),
                 ref.watch(fetchComentsOfPostProvider(widget.postId)).when(
                     data: (data) => Expanded(
                           child: ListView.builder(

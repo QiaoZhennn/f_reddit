@@ -51,6 +51,7 @@ class PostCard extends ConsumerWidget {
     final isTypeLink = post.type == 'link';
     final currentTheme = ref.watch(themeNotifierProvider);
     final user = ref.watch(userProvider)!;
+    final isGuest = !user.isAuthenticated;
     return Column(
       children: [
         Container(
@@ -171,7 +172,9 @@ class PostCard extends ConsumerWidget {
                               Row(
                                 children: [
                                   IconButton(
-                                      onPressed: () => upvotePost(ref),
+                                      onPressed: isGuest
+                                          ? () {}
+                                          : () => upvotePost(ref),
                                       icon: Icon(
                                         Icons.thumb_up,
                                         size: 30,
@@ -184,7 +187,9 @@ class PostCard extends ConsumerWidget {
                                     style: const TextStyle(fontSize: 17),
                                   ),
                                   IconButton(
-                                      onPressed: () => downvotePost(ref),
+                                      onPressed: isGuest
+                                          ? () {}
+                                          : () => downvotePost(ref),
                                       icon: Icon(
                                         Icons.thumb_down,
                                         size: 30,
@@ -221,8 +226,10 @@ class PostCard extends ConsumerWidget {
                                       data: (data) {
                                         if (data.mods.contains(user.uid)) {
                                           return IconButton(
-                                              onPressed: () =>
-                                                  deletePost(context, ref),
+                                              onPressed: isGuest
+                                                  ? () {}
+                                                  : () =>
+                                                      deletePost(context, ref),
                                               icon: const Icon(
                                                 Icons.admin_panel_settings,
                                                 size: 30,
@@ -255,20 +262,25 @@ class PostCard extends ConsumerWidget {
                                                           (context, index) {
                                                         final award =
                                                             user.awards[index];
-                                                        return GestureDetector(
-                                                          onTap: () =>
-                                                              awardPost(context,
-                                                                  ref, award),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Image.asset(
-                                                                Constants
-                                                                        .awards[
-                                                                    award]!),
-                                                          ),
-                                                        );
+                                                        return isGuest
+                                                            ? null
+                                                            : GestureDetector(
+                                                                onTap: () =>
+                                                                    awardPost(
+                                                                        context,
+                                                                        ref,
+                                                                        award),
+                                                                child: Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                              .all(
+                                                                          8.0),
+                                                                  child: Image.asset(
+                                                                      Constants
+                                                                              .awards[
+                                                                          award]!),
+                                                                ),
+                                                              );
                                                       })),
                                             ));
                                   },

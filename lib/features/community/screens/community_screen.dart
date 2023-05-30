@@ -27,6 +27,7 @@ class CommunityScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider)!;
+    final isGuest = !user.isAuthenticated;
     return Scaffold(
       body: ref.watch(getCommunityByNameProvider(name)).when(
           data: (data) => NestedScrollView(
@@ -65,37 +66,39 @@ class CommunityScreen extends ConsumerWidget {
                               style: const TextStyle(
                                   fontSize: 19, fontWeight: FontWeight.bold),
                             ),
-                            data.mods.contains(user.uid)
-                                ? OutlinedButton(
-                                    onPressed: () =>
-                                        navigateToModTools(context),
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
+                            if (!isGuest)
+                              data.mods.contains(user.uid)
+                                  ? OutlinedButton(
+                                      onPressed: () =>
+                                          navigateToModTools(context),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 25,
+                                        ),
                                       ),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 25,
+                                      child: const Text('Mod Tools'),
+                                    )
+                                  : OutlinedButton(
+                                      onPressed: () =>
+                                          joinCommunity(ref, data, context),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 25,
+                                        ),
                                       ),
+                                      child: Text(
+                                          data.members.contains(user.uid)
+                                              ? 'Joined'
+                                              : 'Join'),
                                     ),
-                                    child: const Text('Mod Tools'),
-                                  )
-                                : OutlinedButton(
-                                    onPressed: () =>
-                                        joinCommunity(ref, data, context),
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 25,
-                                      ),
-                                    ),
-                                    child: Text(data.members.contains(user.uid)
-                                        ? 'Joined'
-                                        : 'Join'),
-                                  ),
                           ],
                         ),
                         Padding(
