@@ -7,15 +7,16 @@ import 'package:fpdart/fpdart.dart';
 import '../../../core/failures.dart';
 import '../../../core/type_defs.dart';
 import '../../../model/community_model.dart';
+import '../../../model/post.dart';
 
-final communityRepositoryProvider = Provider<CommunityReposity>((ref) {
-  return CommunityReposity(ref.watch(firestoreProvider));
+final communityRepositoryProvider = Provider<CommunityRepository>((ref) {
+  return CommunityRepository(ref.watch(firestoreProvider));
 });
 
-class CommunityReposity {
+class CommunityRepository {
   final FirebaseFirestore _firestore;
 
-  CommunityReposity(this._firestore);
+  CommunityRepository(this._firestore);
 
   FutureVoid createCommunity(Community community) async {
     try {
@@ -112,6 +113,20 @@ class CommunityReposity {
     }
   }
 
+  Stream<List<Post>> getCommunityPosts(String name) {
+    return _posts
+        .where('communityName', isEqualTo: name)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map(
+              (doc) => Post.fromMap(doc.data() as Map<String, dynamic>),
+            )
+            .toList());
+  }
+
+  CollectionReference get _posts =>
+      _firestore.collection(FirebaseConstants.postsCollection);
   CollectionReference get _communities =>
       _firestore.collection(FirebaseConstants.commentsCollection);
 }

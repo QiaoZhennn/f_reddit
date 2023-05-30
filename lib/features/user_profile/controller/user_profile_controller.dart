@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routemaster/routemaster.dart';
 
 import '../../../core/utils.dart';
+import '../../../model/post.dart';
 import '../../../model/user_model.dart';
 import '../../auth/controller/auth_controller.dart';
 
@@ -15,6 +16,10 @@ final userProfileControllerProvider =
   final userProfileRepository = ref.watch(userProfileRepositoryProvider);
   final storageReposity = ref.watch(storageRepositoryProvider);
   return UserProfileController(userProfileRepository, ref, storageReposity);
+});
+
+final getUserPostsProvider = StreamProvider.family((ref, String uid) {
+  return ref.read(userProfileControllerProvider.notifier).getUserPosts(uid);
 });
 
 class UserProfileController extends StateNotifier<bool> {
@@ -51,5 +56,9 @@ class UserProfileController extends StateNotifier<bool> {
       showSnackBar(context, "User Profile edited successfully");
       Routemaster.of(context).pop();
     });
+  }
+
+  Stream<List<Post>> getUserPosts(String uid) {
+    return _userProfileRepository.getUserPosts(uid);
   }
 }

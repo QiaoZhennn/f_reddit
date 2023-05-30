@@ -11,6 +11,7 @@ import 'package:routemaster/routemaster.dart';
 import '../../../core/failures.dart';
 import '../../../core/utils.dart';
 import '../../../model/community_model.dart';
+import '../../../model/post.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../repository/community_repository.dart';
 
@@ -34,13 +35,17 @@ final searchCommunityProvider = StreamProvider.family((ref, String query) {
   return ref.watch(communityControllerProvider.notifier).searchCommunity(query);
 });
 
+final getCommunityPostsProvider = StreamProvider.family((ref, String uid) {
+  return ref.read(communityControllerProvider.notifier).getCommunityPosts(uid);
+});
+
 class CommunityController extends StateNotifier<bool> {
-  final CommunityReposity _communityReposity;
+  final CommunityRepository _communityRepository;
   final Ref _ref;
   final StorageRepository _storageRepository;
 
   CommunityController(
-      this._communityReposity, this._ref, this._storageRepository)
+      this._communityRepository, this._ref, this._storageRepository)
       : super(false);
 
   void createCommunity(String name, BuildContext context) async {
@@ -54,7 +59,7 @@ class CommunityController extends StateNotifier<bool> {
       members: [uid],
       mods: [uid],
     );
-    final res = await _communityReposity.createCommunity(community);
+    final res = await _communityRepository.createCommunity(community);
     state = false;
     res.fold((l) => showSnackBar(context, l.message), (r) {
       showSnackBar(context, "Community created");
@@ -66,10 +71,10 @@ class CommunityController extends StateNotifier<bool> {
     final uid = _ref.read(userProvider)!.uid;
     Either<Failure, void> res;
     if (community.members.contains(uid)) {
-      res = await _communityReposity.leaveCommunity(community.name, uid);
+      res = await _communityRepository.leaveCommunity(community.name, uid);
       return;
     } else {
-      res = await _communityReposity.joinCommunity(community.name, uid);
+      res = await _communityRepository.joinCommunity(community.name, uid);
     }
     res.fold((l) => showSnackBar(context, l.message), (r) {
       if (community.members.contains(uid)) {
@@ -82,11 +87,11 @@ class CommunityController extends StateNotifier<bool> {
 
   Stream<List<Community>> getUserCommunities() {
     final String uid = _ref.read(userProvider)!.uid;
-    return _communityReposity.getUserCommunities(uid);
+    return _communityRepository.getUserCommunities(uid);
   }
 
   Stream<Community> getCommunity(String name) {
-    return _communityReposity.getCommunity(name);
+    return _communityRepository.getCommunity(name);
   }
 
   void editCommunity(File? profileFile, File? bannerFile, BuildContext context,
@@ -105,7 +110,7 @@ class CommunityController extends StateNotifier<bool> {
           (r) => community = community.copyWith(banner: r));
     }
 
-    final res = await _communityReposity.editCommunity(community);
+    final res = await _communityRepository.editCommunity(community);
     state = false;
     res.fold((l) => showSnackBar(context, l.message), (r) {
       showSnackBar(context, "Community edited successfully");
@@ -114,13 +119,17 @@ class CommunityController extends StateNotifier<bool> {
   }
 
   Stream<List<Community>> searchCommunity(String query) {
-    return _communityReposity.searchCommunity(query);
+    return _communityRepository.searchCommunity(query);
   }
 
   void addMods(
       String communityName, List<String> uids, BuildContext context) async {
-    final res = await _communityReposity.addMods(communityName, uids);
+    final res = await _communityRepository.addMods(communityName, uids);
     res.fold((l) => showSnackBar(context, l.message),
         (r) => Routemaster.of(context).pop());
+  }
+
+  Stream<List<Post>> getCommunityPosts(String name) {
+    return _communityRepository.getCommunityPosts(name);
   }
 }
