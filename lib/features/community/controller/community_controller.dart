@@ -28,6 +28,10 @@ final getCommunityByNameProvider = StreamProvider.family((ref, String name) {
   return ref.watch(communityControllerProvider.notifier).getCommunity(name);
 });
 
+final searchCommunityProvider = StreamProvider.family((ref, String query) {
+  return ref.watch(communityControllerProvider.notifier).searchCommunity(query);
+});
+
 class CommunityController extends StateNotifier<bool> {
   final CommunityReposity _communityReposity;
   final Ref _ref;
@@ -87,5 +91,9 @@ class CommunityController extends StateNotifier<bool> {
       showSnackBar(context, "Community edited successfully");
       Routemaster.of(context).pop();
     });
+  }
+
+  Stream<List<Community>> searchCommunity(String query) {
+    return _communityReposity.searchCommunity(query);
   }
 }
