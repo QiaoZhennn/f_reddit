@@ -19,6 +19,12 @@ final postControllerProvider =
   return PostController(postRepository, ref, storageRepository);
 });
 
+final userPostsProvider =
+    StreamProvider.family((ref, List<Community> communities) {
+  final postController = ref.watch(postControllerProvider.notifier);
+  return postController.fetchUserPosts(communities);
+});
+
 class PostController extends StateNotifier<bool> {
   final PostRepository _postRepository;
   final Ref _ref;
@@ -68,7 +74,7 @@ class PostController extends StateNotifier<bool> {
       communityProfilePic: selectedCommunity.avatar,
       uid: user.uid,
       username: user.name,
-      type: 'text',
+      type: 'link',
       createdAt: DateTime.now(),
       upvotes: [],
       downvotes: [],
@@ -99,7 +105,7 @@ class PostController extends StateNotifier<bool> {
         communityProfilePic: selectedCommunity.avatar,
         uid: user.uid,
         username: user.name,
-        type: 'text',
+        type: 'image',
         createdAt: DateTime.now(),
         upvotes: [],
         downvotes: [],
@@ -113,5 +119,17 @@ class PostController extends StateNotifier<bool> {
         Routemaster.of(context).pop();
       });
     });
+  }
+
+  Stream<List<Post>> fetchUserPosts(List<Community> communities) {
+    if (communities.isNotEmpty) {
+      return _postRepository.fetchUserPosts(communities);
+    }
+    return Stream.value([]);
+  }
+
+  void deletePost(BuildContext context, Post post) async {
+    final res = await _postRepository.deletePost(post);
+    res.fold((l) => null, (r) => showSnackBar(context, 'Post deleted'));
   }
 }

@@ -6,6 +6,7 @@ import 'package:fpdart/fpdart.dart';
 
 import '../../../core/failures.dart';
 import '../../../core/type_defs.dart';
+import '../../../model/community_model.dart';
 import '../../../model/post.dart';
 
 final postRepositoryProvider = Provider<PostRepository>((ref) {
@@ -24,6 +25,27 @@ class PostRepository {
   FutureVoid addPost(Post post) async {
     try {
       return right(_posts.doc(post.id).set(post.toMap()));
+    } on FirebaseException catch (e) {
+      throw e.message!;
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
+  Stream<List<Post>> fetchUserPosts(List<Community> communities) {
+    return _posts
+        .where('communityName',
+            whereIn: communities.map((e) => e.name).toList())
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((event) => event.docs
+            .map((e) => Post.fromMap(e.data() as Map<String, dynamic>))
+            .toList());
+  }
+
+  FutureVoid deletePost(Post post) async {
+    try {
+      return right(_posts.doc(post.id).delete());
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e) {
