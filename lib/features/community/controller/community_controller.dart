@@ -4,6 +4,7 @@ import 'package:f_reddit/core/constants/constants.dart';
 import 'package:f_reddit/core/providers/firebase_providers.dart';
 import 'package:f_reddit/core/providers/storage_repository_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:routemaster/routemaster.dart';
@@ -94,18 +95,24 @@ class CommunityController extends StateNotifier<bool> {
     return _communityRepository.getCommunity(name);
   }
 
-  void editCommunity(File? profileFile, File? bannerFile, BuildContext context,
-      Community community) async {
+  void editCommunity(
+    File? profileFile,
+    File? bannerFile,
+    BuildContext context,
+    Community community,
+    Uint8List? profileImageWeb,
+    Uint8List? bannerImageWeb,
+  ) async {
     state = true;
-    if (profileFile != null) {
+    if (profileFile != null || profileImageWeb != null) {
       final res = await _storageRepository.storeFile(
-          'communities/profile', community.name, profileFile);
+          'communities/profile', community.name, profileFile, profileImageWeb);
       res.fold((l) => showSnackBar(context, l.message),
           (r) => community = community.copyWith(avatar: r));
     }
-    if (bannerFile != null) {
+    if (bannerFile != null || bannerImageWeb != null) {
       final res = await _storageRepository.storeFile(
-          'communities/banner', community.name, bannerFile);
+          'communities/banner', community.name, bannerFile, bannerImageWeb);
       res.fold((l) => showSnackBar(context, l.message),
           (r) => community = community.copyWith(banner: r));
     }

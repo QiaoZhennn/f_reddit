@@ -14,5 +14,7 @@ final storageProvider = Provider<FirebaseStorage>((ref) {
   return FirebaseStorage.instance;
 });
 final googleSignInProvider = Provider<GoogleSignIn>((ref) {
-  return GoogleSignIn();
+  return GoogleSignIn(
+      clientId:
+          '624268864963-v4poi36tcpfc28vvtp2n38f4atat1c2q.apps.googleusercontent.com');
 });

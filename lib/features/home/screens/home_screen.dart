@@ -2,8 +2,10 @@ import 'package:f_reddit/features/auth/controller/auth_controller.dart';
 import 'package:f_reddit/features/home/delegates/search_community_delegate.dart';
 import 'package:f_reddit/features/home/drawers/community_list_drawer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:routemaster/routemaster.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../theme/palette.dart';
@@ -56,6 +58,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     context: context, delegate: SearchCommunityDelegate(ref));
               },
               icon: const Icon(Icons.search)),
+          IconButton(
+            onPressed: () => Routemaster.of(context).push('/add-post'),
+            icon: const Icon(Icons.add),
+          ),
           Builder(builder: (context) {
             return IconButton(
               icon: CircleAvatar(
@@ -68,7 +74,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       drawer: const CommunityListDrawer(),
       endDrawer: isGuest ? null : const ProfileDrawer(),
-      bottomNavigationBar: isGuest
+      bottomNavigationBar: isGuest || kIsWeb
           ? null
           : CupertinoTabBar(
               activeColor: currentTheme.iconTheme.color,

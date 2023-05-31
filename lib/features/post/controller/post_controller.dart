@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:f_reddit/core/enums.dart';
 import 'package:f_reddit/core/providers/storage_repository_provider.dart';
@@ -114,12 +115,12 @@ class PostController extends StateNotifier<bool> {
   }
 
   void shareImagePost(BuildContext context, String title,
-      Community selectedCommunity, File? file) async {
+      Community selectedCommunity, File? file, Uint8List? webFile) async {
     state = true;
     String postId = Uuid().v1();
     final user = _ref.read(userProvider)!;
     final imageRes = await _storageRepository.storeFile(
-        'posts/${selectedCommunity.name}', postId, file);
+        'posts/${selectedCommunity.name}', postId, file, webFile);
     imageRes.fold((l) => showSnackBar(context, l.message), (r) async {
       final Post post = Post(
         id: postId,

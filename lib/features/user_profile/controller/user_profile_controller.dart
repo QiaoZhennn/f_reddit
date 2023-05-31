@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:f_reddit/core/providers/storage_repository_provider.dart';
 import 'package:f_reddit/features/user_profile/repository/user_profile_repository.dart';
@@ -32,19 +33,24 @@ class UserProfileController extends StateNotifier<bool> {
       this._userProfileRepository, this._ref, this._storageRepository)
       : super(false);
 
-  void editUserProfile(File? profileFile, File? bannerFile,
-      BuildContext context, String name) async {
+  void editUserProfile(
+      File? profileFile,
+      File? bannerFile,
+      BuildContext context,
+      String name,
+      Uint8List? profileFileWeb,
+      Uint8List? bannerFileWeb) async {
     state = true;
     UserModel user = _ref.read(userProvider)!;
     if (profileFile != null) {
       final res = await _storageRepository.storeFile(
-          'users/profile', user.uid, profileFile);
+          'users/profile', user.uid, profileFile, profileFileWeb);
       res.fold((l) => showSnackBar(context, l.message),
           (r) => user = user.copyWith(profile: r));
     }
     if (bannerFile != null) {
       final res = await _storageRepository.storeFile(
-          'users/banner', user.uid, bannerFile);
+          'users/banner', user.uid, bannerFile, bannerFileWeb);
       res.fold((l) => showSnackBar(context, l.message),
           (r) => user = user.copyWith(banner: r));
     }

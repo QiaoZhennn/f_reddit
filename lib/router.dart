@@ -11,6 +11,7 @@ import 'features/auth/screens/login_screen.dart';
 import 'features/community/screens/community_screen.dart';
 import 'features/community/screens/edit_community_screen.dart';
 import 'features/home/screens/home_screen.dart';
+import 'features/post/screens/add_post_screen.dart';
 import 'features/user_profile/screens/edit_profile_screen.dart';
 
 final loggedOutRoute = RouteMap(routes: {
@@ -36,4 +37,5 @@ final loggedInRoute = RouteMap(routes: {
       MaterialPage(child: AddPostTypeScreen(route.pathParameters['type']!)),
   '/post/:pid/comments': (route) =>
       MaterialPage(child: CommentScreen(route.pathParameters['pid']!)),
+  '/add-post': (route) => MaterialPage(child: AddPostScreen()),
 });

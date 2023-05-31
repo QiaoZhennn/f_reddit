@@ -1,6 +1,7 @@
 import 'package:f_reddit/core/common/loader.dart';
 import 'package:f_reddit/core/common/sign_in_button.dart';
 import 'package:f_reddit/core/constants/constants.dart';
+import 'package:f_reddit/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -46,7 +47,7 @@ class LoginScreen extends ConsumerWidget {
                 child: Image.asset(Constants.loginEmotePath, height: 400),
               ),
               const SizedBox(height: 20),
-              const SignInButton(),
+              Responsive(child: const SignInButton()),
             ]),
     );
   }
